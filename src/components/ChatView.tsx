@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { Message } from "../providers/base";
 import { Conversation } from "../utils/storage";
@@ -77,12 +77,16 @@ export function ChatView({
     .map((m) => `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`)
     .join("\n\n");
 
-  // Track actual selection locally - this is the source of truth for display
-  const [localSelection, setLocalSelection] = useState<string>(selectedItemId);
+  // Local selection state - source of truth for the List (like ChatGPT extension)
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Sync local selection with prop when it changes (e.g., after creating new chat)
+  // Sync with parent's selectedItemId using setTimeout (like ChatGPT extension)
+  // The delay gives React time to render new items before selecting them
   useEffect(() => {
-    setLocalSelection(selectedItemId);
+    const timer = setTimeout(() => {
+      setSelectedId(selectedItemId);
+    }, 50);
+    return () => clearTimeout(timer);
   }, [selectedItemId]);
 
   const handleSendMessage = () => {
@@ -99,21 +103,21 @@ export function ChatView({
       searchText={searchText}
       onSearchTextChange={onSearchTextChange}
       searchBarPlaceholder="Type a message..."
+      selectedItemId={selectedId ?? undefined}
       onSelectionChange={(id) => {
-        if (!id) return;
+        // Block ALL selection changes during loading (prevents oscillation)
+        // Programmatic selection from parent still works via useEffect
+        if (!id || id === selectedId || isLoading) return;
 
-        // Update local selection immediately
-        setLocalSelection(id);
+        setSelectedId(id);
 
-        // Notify parent
         if (id === "new-chat") {
           onNewChat();
-          return;
-        }
-
-        const conv = conversations.find((c) => c.id === id);
-        if (conv) {
-          onSelectConversation(conv);
+        } else {
+          const conv = conversations.find((c) => c.id === id);
+          if (conv) {
+            onSelectConversation(conv);
+          }
         }
       }}
     >
@@ -142,8 +146,7 @@ export function ChatView({
       {conversations.length > 0 && (
         <List.Section title="History">
           {conversations.map((conv) => {
-            // Use local state for isSelected - synchronized with onSelectionChange
-            const isSelected = localSelection === conv.id;
+            const isSelected = selectedId === conv.id;
             // Use conv's messages directly to avoid timing issues
             const convMarkdown = isSelected
               ? formatConversation(conv.messages, streamingContent)
