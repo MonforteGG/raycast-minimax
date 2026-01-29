@@ -18,7 +18,10 @@ interface ChatViewProps {
   onDeleteConversation: (conversation: Conversation) => void;
 }
 
-function formatConversation(messages: Message[], streamingContent: string): string {
+function formatConversation(
+  messages: Message[],
+  streamingContent: string,
+): string {
   if (messages.length === 0 && !streamingContent) {
     return `# New Conversation
 
@@ -29,14 +32,14 @@ Type your message above and press **Enter** to send.`;
 
   for (const message of messages) {
     if (message.role === "user") {
-      markdown += `**You**\n\n${message.content}\n\n---\n\n`;
+      markdown += `👤 **You**\n\n${message.content}\n\n───\n\n`;
     } else if (message.role === "assistant") {
-      markdown += `**Assistant**\n\n> ${message.content.split('\n').join('\n> ')}\n\n---\n\n`;
+      markdown += `✨ **Assistant**\n\n${message.content}\n\n───\n\n`;
     }
   }
 
   if (streamingContent) {
-    markdown += `**Assistant**\n\n> ${streamingContent.split('\n').join('\n> ')}\n\n_Generating..._\n\n---\n\n`;
+    markdown += `✨ **Assistant**\n\n${streamingContent}\n\n_Generating..._\n\n───\n\n`;
   }
 
   return markdown;
@@ -45,7 +48,9 @@ Type your message above and press **Enter** to send.`;
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
   const now = new Date();
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Yesterday";
@@ -68,7 +73,9 @@ export function ChatView({
   onDeleteConversation,
 }: ChatViewProps) {
   const markdown = formatConversation(messages, streamingContent);
-  const fullConversation = messages.map((m) => `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`).join("\n\n");
+  const fullConversation = messages
+    .map((m) => `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`)
+    .join("\n\n");
 
   // Track actual selection locally - this is the source of truth for display
   const [localSelection, setLocalSelection] = useState<string>(selectedItemId);
@@ -142,7 +149,12 @@ export function ChatView({
             const convMarkdown = isSelected
               ? formatConversation(conv.messages, streamingContent)
               : `**${conv.title}**\n\n${conv.messages.length} messages`;
-            const convFullText = conv.messages.map((m) => `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`).join("\n\n");
+            const convFullText = conv.messages
+              .map(
+                (m) =>
+                  `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`,
+              )
+              .join("\n\n");
 
             return (
               <List.Item
