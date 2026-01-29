@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { Message } from "../providers/base";
 import { Conversation } from "../utils/storage";
@@ -80,11 +80,10 @@ export function ChatView({
   // Track actual selection locally - this is the source of truth for display
   const [localSelection, setLocalSelection] = useState<string>(selectedItemId);
 
-  // Only sync from prop on initial mount (when localSelection would match initial selectedItemId)
-  const isInitialMount = useRef(true);
-  if (isInitialMount.current) {
-    isInitialMount.current = false;
-  }
+  // Sync local selection with prop when it changes (e.g., after creating new chat)
+  useEffect(() => {
+    setLocalSelection(selectedItemId);
+  }, [selectedItemId]);
 
   const handleSendMessage = () => {
     if (searchText.trim() && !isLoading) {
