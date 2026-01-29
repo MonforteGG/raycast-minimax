@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { Message } from "../providers/base";
 import { Conversation } from "../utils/storage";
@@ -11,6 +11,7 @@ interface ChatViewProps {
   isLoading: boolean;
   searchText: string;
   selectedItemId: string;
+  selectionTrigger: number;
   onSearchTextChange: (text: string) => void;
   onSubmit: (text: string) => void;
   onNewChat: () => void;
@@ -66,6 +67,7 @@ export function ChatView({
   isLoading,
   searchText,
   selectedItemId,
+  selectionTrigger,
   onSearchTextChange,
   onSubmit,
   onNewChat,
@@ -80,17 +82,35 @@ export function ChatView({
   // Local selection state - source of truth for the List (like ChatGPT extension)
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  // REF to block selection changes synchronously during submit
+  // This is needed because setIsLoading(true) in parent hasn't propagated yet
+  // when clearSearchBar triggers onSelectionChange
+  const isSubmittingRef = useRef(false);
+
   // Sync with parent's selectedItemId using setTimeout (like ChatGPT extension)
   // The delay gives React time to render new items before selecting them
+  // selectionTrigger forces re-selection by clearing and re-applying the selection
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // When trigger changes, force re-selection by setting null first
+    // This makes Raycast "forget" the current selection and re-apply it
+    const timer1 = setTimeout(() => {
+      setSelectedId(null);
+    }, 30);
+
+    const timer2 = setTimeout(() => {
+      isSubmittingRef.current = false;
       setSelectedId(selectedItemId);
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [selectedItemId]);
+    }, 80);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [selectedItemId, selectionTrigger]);
 
   const handleSendMessage = () => {
     if (searchText.trim() && !isLoading) {
+      isSubmittingRef.current = true; // Set BEFORE onSubmit (synchronous)
       onSubmit(searchText.trim());
       onSearchTextChange("");
     }
@@ -105,9 +125,10 @@ export function ChatView({
       searchBarPlaceholder="Type a message..."
       selectedItemId={selectedId ?? undefined}
       onSelectionChange={(id) => {
-        // Block ALL selection changes during loading (prevents oscillation)
+        // Block ALL selection changes during loading OR during submit
+        // isSubmittingRef is synchronous, isLoading prop may lag behind
         // Programmatic selection from parent still works via useEffect
-        if (!id || id === selectedId || isLoading) return;
+        if (!id || id === selectedId || isLoading || isSubmittingRef.current) return;
 
         setSelectedId(id);
 

@@ -19,6 +19,7 @@ export default function AIChat() {
 
   const { streamingContent, isLoading, sendMessage } = useChat();
   const [searchText, setSearchText] = useState("");
+  const [selectionTrigger, setSelectionTrigger] = useState(0);
 
   const handleSubmit = useCallback(
     async (text: string) => {
@@ -47,6 +48,9 @@ export default function AIChat() {
       if (response) {
         await addMessage(convId, response);
       }
+
+      // Incrementar trigger para forzar re-selección después de que la lista se reordene
+      setSelectionTrigger((prev) => prev + 1);
     },
     [
       currentId,
@@ -121,6 +125,7 @@ export default function AIChat() {
         isLoading={true}
         searchText=""
         selectedItemId="new-chat"
+        selectionTrigger={0}
         onSearchTextChange={() => {}}
         onSubmit={() => {}}
         onNewChat={() => {}}
@@ -139,6 +144,7 @@ export default function AIChat() {
       isLoading={isLoading}
       searchText={searchText}
       selectedItemId={selectedItemId}
+      selectionTrigger={selectionTrigger}
       onSearchTextChange={setSearchText}
       onSubmit={handleSubmit}
       onNewChat={handleNewChat}
