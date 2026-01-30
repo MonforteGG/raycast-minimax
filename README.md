@@ -1,103 +1,117 @@
 # MiniMax - Raycast Extension
 
-Extensión de Raycast "Bring Your Own Key" para chat con IA. Actualmente soporta **MiniMax M2.1** con streaming de respuestas.
+A "Bring Your Own Key" Raycast extension for AI chat. Currently supports **MiniMax M2.1** with streaming responses.
 
-## Características
+## Features
 
-- **Chat conversacional** con historial persistente
-- **Streaming de respuestas** en tiempo real
-- **Pregunta rápida** (Ask AI) para consultas simples
-- **Historial de conversaciones** integrado en la vista principal
-- **Filtrado automático** de contenido de "thinking" del modelo
+- **Conversational chat** with persistent history
+- **Streaming responses** in real-time
+- **Quick question** (Ask AI) for simple queries
+- **Conversation history** integrated in the main view
+- **Automatic filtering** of model "thinking" content
+- **Concise Mode** for brief, focused responses
 
-## Instalación
+## Installation
 
 ```bash
-# Clonar el repositorio
-git clone <repo-url>
-cd raycast_ia_byk
+# Clone the repository
+git clone https://github.com/MonforteGG/raycast-minimax
+cd raycast-minimax
 
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 npm run dev
 ```
 
-## Configuración
+## Configuration
 
-Abre Raycast → Busca "AI Chat" → `Cmd + ,` para abrir preferencias:
+Open Raycast → Search for "AI Chat" → `Cmd + ,` to open preferences:
 
-| Preferencia | Tipo | Descripción |
+| Preference | Type | Description |
 |-------------|------|-------------|
-| **MiniMax API Key** | password | Tu API key de MiniMax (requerida) |
-| **System Prompt** | texto | Prompt de sistema personalizado (opcional) |
+| **MiniMax API Key** | password | Your MiniMax API key (required) |
+| **Model** | dropdown | MiniMax-M2.1 (recommended) or MiniMax-M2 |
+| **System Prompt** | text | Custom system prompt (optional) |
 | **Temperature** | dropdown | 0.3 / 0.7 / 1.0 / 1.5 |
 | **Max Tokens** | dropdown | 1024 / 2048 / 4096 / 8192 |
-| **Stream Responses** | checkbox | Habilitar streaming (default: true) |
+| **Stream Responses** | checkbox | Enable streaming (default: true) |
+| **Concise Mode** | checkbox | Brief 2-3 sentence answers unless more detail requested (default: true) |
 
-## Comandos
+### Getting a MiniMax API Key
+
+1. Visit [MiniMax Platform](https://platform.minimax.chat/)
+2. Create an account or sign in
+3. Navigate to API Keys section
+4. Generate a new API key
+5. Copy and paste it into the extension preferences
+
+## Commands
 
 ### AI Chat
-Chat conversacional con historial integrado.
+Conversational chat with integrated history.
 
-- **Barra superior**: Escribe tu mensaje
-- **Enter**: Envía el mensaje
-- **Panel izquierdo**: New Chat + historial de conversaciones
-- **Panel derecho**: Conversación actual
-- `Cmd + N`: Nueva conversación
-- `Cmd + Backspace`: Eliminar conversación
-- `Cmd + C`: Copiar conversación
+- **Top bar**: Type your message
+- **Enter**: Send the message
+- **Left panel**: New Chat + conversation history
+- **Right panel**: Current conversation
+- `Cmd + N`: New conversation
+- `Cmd + Backspace`: Delete conversation
+- `Cmd + C`: Copy conversation
 
 ### Ask AI
-Pregunta rápida con respuesta en streaming.
+Quick question with streaming response.
 
-- Escribe tu pregunta en el formulario
-- Ve la respuesta en tiempo real
-- Acciones: Copiar, Pegar, Continuar en Chat
+- Type your question in the form
+- See the response in real-time
+- Actions: Copy, Paste, Continue in Chat
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
-raycast_ia_byk/
-├── package.json              # Manifest de Raycast
+raycast-minimax/
+├── package.json              # Raycast manifest
 ├── tsconfig.json
 ├── assets/
 │   └── icon.png
 ├── src/
-│   ├── ask-ai.tsx            # Comando: pregunta rápida
-│   ├── ai-chat.tsx           # Comando: chat con historial
+│   ├── ask-ai.tsx            # Command: quick question
+│   ├── ai-chat.tsx           # Command: chat with history
 │   ├── providers/
-│   │   ├── base.ts           # Interface del provider
-│   │   └── minimax.ts        # Implementación MiniMax M2.1
+│   │   ├── base.ts           # Provider interface
+│   │   └── minimax.ts        # MiniMax M2.1 implementation
 │   ├── hooks/
-│   │   └── useChat.ts        # Hook principal de chat
+│   │   ├── useChat.ts        # Main chat hook
+│   │   └── useChatStore.ts   # Chat state management
 │   ├── components/
-│   │   ├── ChatView.tsx      # Vista de chat
-│   │   └── QuickAIResult.tsx # Vista de respuesta rápida
+│   │   ├── ChatView.tsx      # Chat view
+│   │   └── QuickAIResult.tsx # Quick response view
 │   └── utils/
-│       ├── storage.ts        # Persistencia LocalStorage
-│       └── errors.ts         # Manejo de errores
+│       ├── storage.ts        # LocalStorage persistence
+│       └── errors.ts         # Error handling
 ```
 
-## API MiniMax M2.1
+## MiniMax M2.1 API
 
 **Endpoint:** `https://api.minimax.io/v1/chat/completions`
 
-**Modelo:** `MiniMax-M2.1`
+**Models:**
+- `MiniMax-M2.1`: Recommended model, optimized for chat
+- `MiniMax-M2`: 200k context window for longer conversations
 
-El provider filtra automáticamente el contenido `<think>...</think>` que el modelo genera durante su razonamiento interno.
+The provider automatically filters `<think>...</think>` content generated during the model's internal reasoning.
 
-## Manejo de Errores
+## Error Handling
 
-- **401**: API key inválida → Abre preferencias automáticamente
-- **429**: Rate limit → Mensaje de espera
-- **500+**: Error de servidor → Mensaje de reintento
+- **401**: Invalid API key → Opens preferences automatically
+- **429**: Rate limit → Wait message
+- **500+**: Server error → Retry message
 
-## Desarrollo
+## Development
 
 ```bash
-# Desarrollo con hot-reload
+# Development with hot-reload
 npm run dev
 
 # Build
@@ -110,11 +124,11 @@ npm run lint
 npm run fix-lint
 ```
 
-## Dependencias
+## Dependencies
 
 - `@raycast/api`: ^1.93.0
 - `@raycast/utils`: ^1.19.0
 
-## Licencia
+## License
 
-MIT
+MIT - see [LICENSE](LICENSE) for details.
