@@ -49,7 +49,7 @@ export default function AIChat() {
         await addMessage(convId, response);
       }
 
-      // Incrementar trigger para forzar re-selección después de que la lista se reordene
+      // Increment trigger to force re-selection after the list reorders
       setSelectionTrigger((prev) => prev + 1);
     },
     [

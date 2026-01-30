@@ -4,27 +4,31 @@
   "description": "MiniMax AI Chat for Raycast",
   "version": "1.0.0",
   "icon": "icon.png",
-  "author": "monforte",
+  "author": "monfortegg",
   "repository": {
     "type": "git",
     "url": "https://github.com/MonforteGG/raycast-minimax"
   },
   "categories": ["Productivity", "Developer Tools"],
   "license": "MIT",
+  "apiVersion": "1.93.0",
+  "platforms": ["macOS", "Windows"],
   "commands": [
     {
       "name": "ask-ai",
       "title": "Ask AI",
       "subtitle": "Quick Question",
       "description": "Ask a quick question to AI and get a streaming response",
-      "mode": "view"
+      "mode": "view",
+      "icon": "icon.png"
     },
     {
       "name": "ai-chat",
       "title": "AI Chat",
       "subtitle": "Conversation",
       "description": "Chat with AI - includes conversation history",
-      "mode": "view"
+      "mode": "view",
+      "icon": "icon.png"
     }
   ],
   "preferences": [

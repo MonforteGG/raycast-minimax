@@ -47,18 +47,20 @@ function ResultView({ question }: { question: string }) {
   const { streamingContent, isLoading, sendMessage } = useChat();
   const [response, setResponse] = useState("");
   const hasSent = useRef(false);
+  const sendMessageRef = useRef(sendMessage);
+  sendMessageRef.current = sendMessage;
 
   useEffect(() => {
     if (!hasSent.current) {
       hasSent.current = true;
       const userMessage: Message = { role: "user", content: question };
-      sendMessage([userMessage]).then((assistantMsg) => {
+      sendMessageRef.current([userMessage]).then((assistantMsg) => {
         if (assistantMsg) {
           setResponse(assistantMsg.content);
         }
       });
     }
-  }, [question, sendMessage]);
+  }, [question]);
 
   // Show streaming while loading, then the final response
   const displayResponse = streamingContent || response;
@@ -67,7 +69,10 @@ function ResultView({ question }: { question: string }) {
     const conversation = createConversation(question);
     conversation.messages = [{ role: "user", content: question }];
     if (displayResponse) {
-      conversation.messages.push({ role: "assistant", content: displayResponse });
+      conversation.messages.push({
+        role: "assistant",
+        content: displayResponse,
+      });
     }
     await saveConversation(conversation);
     await setCurrentConversationId(conversation.id);

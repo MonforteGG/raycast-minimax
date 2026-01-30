@@ -3,6 +3,10 @@ import { Action, ActionPanel, Icon, List } from "@raycast/api";
 import { Message } from "../providers/base";
 import { Conversation } from "../utils/storage";
 
+// Selection timing delays (ms) - allows React to render new items before selecting
+const SELECTION_CLEAR_DELAY_MS = 30;
+const SELECTION_APPLY_DELAY_MS = 80;
+
 interface ChatViewProps {
   conversations: Conversation[];
   currentConversation: Conversation | null;
@@ -61,7 +65,7 @@ function formatDate(timestamp: number): string {
 
 export function ChatView({
   conversations,
-  currentConversation,
+  currentConversation: _currentConversation,
   messages,
   streamingContent,
   isLoading,
@@ -74,10 +78,8 @@ export function ChatView({
   onSelectConversation,
   onDeleteConversation,
 }: ChatViewProps) {
+  void _currentConversation; // Reserved for future use
   const markdown = formatConversation(messages, streamingContent);
-  const fullConversation = messages
-    .map((m) => `${m.role === "user" ? "You" : "Assistant"}: ${m.content}`)
-    .join("\n\n");
 
   // Local selection state - source of truth for the List (like ChatGPT extension)
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -95,12 +97,12 @@ export function ChatView({
     // This makes Raycast "forget" the current selection and re-apply it
     const timer1 = setTimeout(() => {
       setSelectedId(null);
-    }, 30);
+    }, SELECTION_CLEAR_DELAY_MS);
 
     const timer2 = setTimeout(() => {
       isSubmittingRef.current = false;
       setSelectedId(selectedItemId);
-    }, 80);
+    }, SELECTION_APPLY_DELAY_MS);
 
     return () => {
       clearTimeout(timer1);
@@ -128,7 +130,8 @@ export function ChatView({
         // Block ALL selection changes during loading OR during submit
         // isSubmittingRef is synchronous, isLoading prop may lag behind
         // Programmatic selection from parent still works via useEffect
-        if (!id || id === selectedId || isLoading || isSubmittingRef.current) return;
+        if (!id || id === selectedId || isLoading || isSubmittingRef.current)
+          return;
 
         setSelectedId(id);
 

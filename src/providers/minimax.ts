@@ -8,6 +8,7 @@ import {
 } from "./base";
 
 const MINIMAX_API_URL = "https://api.minimax.io/v1/chat/completions";
+const REQUEST_TIMEOUT_MS = 60000; // 60 seconds timeout
 
 export class MiniMaxProvider implements AIProvider {
   name = "MiniMax";
@@ -38,52 +39,84 @@ export class MiniMaxProvider implements AIProvider {
   }
 
   async chat(request: ChatRequest): Promise<ChatResponse> {
-    const response = await fetch(MINIMAX_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages: this.buildMessages(request.messages),
-        temperature: request.temperature ?? this.defaultTemperature,
-        max_tokens: request.maxTokens ?? this.defaultMaxTokens,
-        stream: false,
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    if (!response.ok) {
-      const error = await this.handleError(response);
+    try {
+      const response = await fetch(MINIMAX_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: this.buildMessages(request.messages),
+          temperature: request.temperature ?? this.defaultTemperature,
+          max_tokens: request.maxTokens ?? this.defaultMaxTokens,
+          stream: false,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await this.handleError(response);
+        throw error;
+      }
+
+      const data = await response.json();
+      const rawContent = data.choices?.[0]?.message?.content ?? "";
+      return {
+        content: this.removeThinking(rawContent),
+        finishReason: data.choices?.[0]?.finish_reason,
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Request timed out");
+      }
       throw error;
     }
-
-    const data = await response.json();
-    const rawContent = data.choices[0]?.message?.content ?? "";
-    return {
-      content: this.removeThinking(rawContent),
-      finishReason: data.choices[0]?.finish_reason,
-    };
   }
 
   async chatStream(
     request: ChatRequest,
     callbacks: StreamCallbacks,
   ): Promise<void> {
-    const response = await fetch(MINIMAX_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages: this.buildMessages(request.messages),
-        temperature: request.temperature ?? this.defaultTemperature,
-        max_tokens: request.maxTokens ?? this.defaultMaxTokens,
-        stream: true,
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+    let response: Response;
+    try {
+      response = await fetch(MINIMAX_API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: this.buildMessages(request.messages),
+          temperature: request.temperature ?? this.defaultTemperature,
+          max_tokens: request.maxTokens ?? this.defaultMaxTokens,
+          stream: true,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        callbacks.onError(new Error("Request timed out"));
+        return;
+      }
+      callbacks.onError(
+        error instanceof Error ? error : new Error(String(error)),
+      );
+      return;
+    }
 
     if (!response.ok) {
       const error = await this.handleError(response);
@@ -104,9 +137,12 @@ export class MiniMaxProvider implements AIProvider {
     let thinkingBuffer = "";
 
     try {
-      while (true) {
-        const { done, value } = await reader.read();
+      let done = false;
+      while (!done) {
+        const result = await reader.read();
+        done = result.done;
         if (done) break;
+        const value = result.value;
 
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n");
@@ -129,7 +165,10 @@ export class MiniMaxProvider implements AIProvider {
                 if (!insideThinking && thinkingBuffer.endsWith("<think>")) {
                   insideThinking = true;
                   thinkingBuffer = "";
-                } else if (insideThinking && thinkingBuffer.endsWith("</think>")) {
+                } else if (
+                  insideThinking &&
+                  thinkingBuffer.endsWith("</think>")
+                ) {
                   insideThinking = false;
                   thinkingBuffer = "";
                 } else if (!insideThinking) {

@@ -33,14 +33,16 @@ export function useChat(): UseChatReturn {
     if (prefs.conciseMode) {
       const conciseInstruction =
         "Be concise. Give brief, direct answers in 2-3 sentences maximum unless more detail is explicitly requested.";
-      systemPrompt = systemPrompt ? `${conciseInstruction}\n\n${systemPrompt}` : conciseInstruction;
+      systemPrompt = systemPrompt
+        ? `${conciseInstruction}\n\n${systemPrompt}`
+        : conciseInstruction;
     }
 
     return new MiniMaxProvider({
       apiKey: prefs.minimaxApiKey,
       model: prefs.model,
-      temperature: parseFloat(prefs.temperature),
-      maxTokens: parseInt(prefs.maxTokens),
+      temperature: parseFloat(prefs.temperature) || 0.7,
+      maxTokens: parseInt(prefs.maxTokens, 10) || 4096,
       systemPrompt: systemPrompt || undefined,
     });
   }, []);
