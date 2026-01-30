@@ -4,16 +4,6 @@ import { Message } from "../providers/base";
 import { MiniMaxProvider } from "../providers/minimax";
 import { handleError } from "../utils/errors";
 
-interface Preferences {
-  minimaxApiKey: string;
-  model: string;
-  systemPrompt?: string;
-  temperature: string;
-  maxTokens: string;
-  streamResponses: boolean;
-  conciseMode: boolean;
-}
-
 interface UseChatReturn {
   streamingContent: string;
   isLoading: boolean;
