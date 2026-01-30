@@ -25,3 +25,6 @@ build/
 .vscode/
 *.swp
 *.swo
+
+# Info/video files
+info/
