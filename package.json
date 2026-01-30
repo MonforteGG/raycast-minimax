@@ -2,8 +2,13 @@
   "name": "minimax-ai",
   "title": "MiniMax",
   "description": "MiniMax AI Chat for Raycast",
+  "version": "1.0.0",
   "icon": "icon.png",
   "author": "monforte",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MonforteGG/raycast-minimax"
+  },
   "categories": ["Productivity", "Developer Tools"],
   "license": "MIT",
   "commands": [
