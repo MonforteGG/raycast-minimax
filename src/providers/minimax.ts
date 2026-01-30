@@ -8,17 +8,18 @@ import {
 } from "./base";
 
 const MINIMAX_API_URL = "https://api.minimax.io/v1/chat/completions";
-const MODEL = "MiniMax-M2.1";
 
 export class MiniMaxProvider implements AIProvider {
-  name = "MiniMax M2.1";
+  name = "MiniMax";
   private apiKey: string;
+  private model: string;
   private defaultTemperature: number;
   private defaultMaxTokens: number;
   private systemPrompt?: string;
 
   constructor(config: ProviderConfig) {
     this.apiKey = config.apiKey;
+    this.model = config.model || "MiniMax-M2.1";
     this.defaultTemperature = config.temperature ?? 0.7;
     this.defaultMaxTokens = config.maxTokens ?? 4096;
     this.systemPrompt = config.systemPrompt;
@@ -44,7 +45,7 @@ export class MiniMaxProvider implements AIProvider {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: this.model,
         messages: this.buildMessages(request.messages),
         temperature: request.temperature ?? this.defaultTemperature,
         max_tokens: request.maxTokens ?? this.defaultMaxTokens,
@@ -76,7 +77,7 @@ export class MiniMaxProvider implements AIProvider {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: this.model,
         messages: this.buildMessages(request.messages),
         temperature: request.temperature ?? this.defaultTemperature,
         max_tokens: request.maxTokens ?? this.defaultMaxTokens,

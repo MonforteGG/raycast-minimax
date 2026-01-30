@@ -1,4 +1,4 @@
-# Contexto del Proyecto - BYOK AI
+# Contexto del Proyecto - MiniMax
 
 **Última actualización:** 2026-01-29
 

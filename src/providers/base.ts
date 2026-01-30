@@ -29,6 +29,7 @@ export interface AIProvider {
 
 export interface ProviderConfig {
   apiKey: string;
+  model?: string;
   temperature?: number;
   maxTokens?: number;
   systemPrompt?: string;

@@ -1,7 +1,7 @@
 {
-  "name": "byok-ai",
-  "title": "BYOK AI",
-  "description": "Bring Your Own Key AI Chat - Currently supports MiniMax M2.1",
+  "name": "minimax-ai",
+  "title": "MiniMax",
+  "description": "MiniMax AI Chat for Raycast",
   "icon": "icon.png",
   "author": "monforte",
   "categories": ["Productivity", "Developer Tools"],
@@ -30,6 +30,18 @@
       "title": "MiniMax API Key",
       "description": "Your MiniMax API key for authentication",
       "placeholder": "Enter your MiniMax API key"
+    },
+    {
+      "name": "model",
+      "type": "dropdown",
+      "required": false,
+      "title": "Model",
+      "description": "MiniMax model to use for AI responses",
+      "default": "MiniMax-M2.1",
+      "data": [
+        { "title": "MiniMax M2.1 (Recommended)", "value": "MiniMax-M2.1" },
+        { "title": "MiniMax M2 (200k context)", "value": "MiniMax-M2" }
+      ]
     },
     {
       "name": "systemPrompt",
@@ -75,6 +87,15 @@
       "description": "Enable real-time streaming of AI responses",
       "default": true,
       "label": "Enable streaming"
+    },
+    {
+      "name": "conciseMode",
+      "type": "checkbox",
+      "required": false,
+      "title": "Concise Mode",
+      "description": "Enable shorter, more direct responses",
+      "default": true,
+      "label": "Enable concise responses"
     }
   ],
   "dependencies": {

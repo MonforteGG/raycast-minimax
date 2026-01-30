@@ -1,4 +1,4 @@
-# BYOK AI - Raycast Extension
+# MiniMax - Raycast Extension
 
 Extensión de Raycast "Bring Your Own Key" para chat con IA. Actualmente soporta **MiniMax M2.1** con streaming de respuestas.
 

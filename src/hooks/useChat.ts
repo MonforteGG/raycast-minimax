@@ -6,10 +6,12 @@ import { handleError } from "../utils/errors";
 
 interface Preferences {
   minimaxApiKey: string;
+  model: string;
   systemPrompt?: string;
   temperature: string;
   maxTokens: string;
   streamResponses: boolean;
+  conciseMode: boolean;
 }
 
 interface UseChatReturn {
@@ -26,11 +28,20 @@ export function useChat(): UseChatReturn {
 
   const getProvider = useCallback(() => {
     const prefs = getPreferenceValues<Preferences>();
+
+    let systemPrompt = prefs.systemPrompt || "";
+    if (prefs.conciseMode) {
+      const conciseInstruction =
+        "Be concise. Give brief, direct answers in 2-3 sentences maximum unless more detail is explicitly requested.";
+      systemPrompt = systemPrompt ? `${conciseInstruction}\n\n${systemPrompt}` : conciseInstruction;
+    }
+
     return new MiniMaxProvider({
       apiKey: prefs.minimaxApiKey,
+      model: prefs.model,
       temperature: parseFloat(prefs.temperature),
       maxTokens: parseInt(prefs.maxTokens),
-      systemPrompt: prefs.systemPrompt,
+      systemPrompt: systemPrompt || undefined,
     });
   }, []);
 

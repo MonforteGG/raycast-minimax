@@ -10,6 +10,8 @@
 type ExtensionPreferences = {
   /** MiniMax API Key - Your MiniMax API key for authentication */
   "minimaxApiKey": string,
+  /** Model - MiniMax model to use for AI responses */
+  "model": "MiniMax-M2.1" | "MiniMax-M2",
   /** System Prompt - Custom system prompt for AI responses (optional) */
   "systemPrompt"?: string,
   /** Temperature - Controls randomness of responses */
@@ -17,7 +19,9 @@ type ExtensionPreferences = {
   /** Max Tokens - Maximum length of AI responses */
   "maxTokens": "1024" | "2048" | "4096" | "8192",
   /** Stream Responses - Enable real-time streaming of AI responses */
-  "streamResponses": boolean
+  "streamResponses": boolean,
+  /** Concise Mode - Enable shorter, more direct responses */
+  "conciseMode": boolean
 }
 
 /** Preferences accessible in all the extension's commands */
