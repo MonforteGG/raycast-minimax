@@ -2,6 +2,10 @@
 
 A "Bring Your Own Key" Raycast extension for AI chat. Currently supports **MiniMax M2.1** with streaming responses.
 
+
+<img width="774" height="486" alt="Captura de pantalla 2026-02-04 214146" src="https://github.com/user-attachments/assets/8c950cc5-f1ee-45ff-82c0-cd85423fc7be" />
+
+
 ## Features
 
 - **Conversational chat** with persistent history
