@@ -2,7 +2,7 @@
   "name": "minimax-ai",
   "title": "MiniMax",
   "description": "MiniMax AI Chat for Raycast",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icon": "icon.png",
   "author": "monfortegg",
   "repository": {

@@ -4,7 +4,7 @@
 
 ## Estado Actual
 
-El proyecto está **funcional**. Es una extensión de Raycast para chat con IA usando MiniMax M2.1.
+El proyecto está **funcional**. Es una extensión de Raycast para chat con IA usando MiniMax (M2.5, M2.1, M2).
 
 ## Lo que Funciona
 
@@ -19,7 +19,7 @@ El proyecto está **funcional**. Es una extensión de Raycast para chat con IA u
   - Vista de respuesta con streaming
   - Opción de continuar en chat
 
-- **Streaming**: Respuestas en tiempo real con MiniMax M2.1
+- **Streaming**: Respuestas en tiempo real con MiniMax M2.5
 
 - **Filtrado de thinking**: Se elimina contenido `<think>...</think>` del modelo
 
