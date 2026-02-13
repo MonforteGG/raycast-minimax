@@ -2,10 +2,6 @@
 
 A "Bring Your Own Key" Raycast extension for AI chat. Currently supports **MiniMax M2.5**, **M2.1**, and **M2** with streaming responses.
 
-
-<img width="774" height="486" alt="Captura de pantalla 2026-02-04 214146" src="https://github.com/user-attachments/assets/8c950cc5-f1ee-45ff-82c0-cd85423fc7be" />
-
-
 ## Features
 
 - **Conversational chat** with persistent history
@@ -33,15 +29,15 @@ npm run dev
 
 Open Raycast → Search for "AI Chat" → `Cmd + ,` to open preferences:
 
-| Preference | Type | Description |
-|-------------|------|-------------|
-| **MiniMax API Key** | password | Your MiniMax API key (required) |
-| **Model** | dropdown | MiniMax-M2.5 (recommended), MiniMax-M2.1, MiniMax-M2 |
-| **System Prompt** | text | Custom system prompt (optional) |
-| **Temperature** | dropdown | 0.3 / 0.7 / 1.0 / 1.5 |
-| **Max Tokens** | dropdown | 1024 / 2048 / 4096 / 8192 |
-| **Stream Responses** | checkbox | Enable streaming (default: true) |
-| **Concise Mode** | checkbox | Brief 2-3 sentence answers unless more detail requested (default: true) |
+| Preference           | Type     | Description                                                             |
+| -------------------- | -------- | ----------------------------------------------------------------------- |
+| **MiniMax API Key**  | password | Your MiniMax API key (required)                                         |
+| **Model**            | dropdown | MiniMax-M2.5 (recommended), MiniMax-M2.1, MiniMax-M2                    |
+| **System Prompt**    | text     | Custom system prompt (optional)                                         |
+| **Temperature**      | dropdown | 0.3 / 0.7 / 1.0 / 1.5                                                   |
+| **Max Tokens**       | dropdown | 1024 / 2048 / 4096 / 8192                                               |
+| **Stream Responses** | checkbox | Enable streaming (default: true)                                        |
+| **Concise Mode**     | checkbox | Brief 2-3 sentence answers unless more detail requested (default: true) |
 
 ### Getting a MiniMax API Key
 
@@ -54,6 +50,7 @@ Open Raycast → Search for "AI Chat" → `Cmd + ,` to open preferences:
 ## Commands
 
 ### AI Chat
+
 Conversational chat with integrated history.
 
 - **Top bar**: Type your message
@@ -65,6 +62,7 @@ Conversational chat with integrated history.
 - `Cmd + C`: Copy conversation
 
 ### Ask AI
+
 Quick question with streaming response.
 
 - Type your question in the form
@@ -101,6 +99,7 @@ raycast-minimax/
 **Endpoint:** `https://api.minimax.io/v1/chat/completions`
 
 **Models:**
+
 - `MiniMax-M2.5`: Recommended, latest model
 - `MiniMax-M2.1`: Previous generation
 - `MiniMax-M2`: 200k context window
@@ -131,8 +130,8 @@ npm run fix-lint
 
 ## Dependencies
 
-- `@raycast/api`: ^1.93.0
-- `@raycast/utils`: ^1.19.0
+- `@raycast/api`: ^1.104.5
+- `@raycast/utils`: ^2.2.2
 
 ## License
 
