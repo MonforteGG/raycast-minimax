@@ -11,7 +11,7 @@ type ExtensionPreferences = {
   /** MiniMax API Key - Your MiniMax API key for authentication */
   "minimaxApiKey": string,
   /** Model - MiniMax model to use for AI responses */
-  "model": "MiniMax-M2.1" | "MiniMax-M2",
+  "model": "MiniMax-M2.5" | "MiniMax-M2.1" | "MiniMax-M2",
   /** System Prompt - Custom system prompt for AI responses (optional) */
   "systemPrompt"?: string,
   /** Temperature - Controls randomness of responses */
