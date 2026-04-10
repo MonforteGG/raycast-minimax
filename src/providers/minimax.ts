@@ -1,6 +1,20 @@
 import { AIProvider, ChatRequest, ChatResponse, StreamCallbacks, ProviderConfig, Message } from "./base";
 
-const MINIMAX_API_URL = "https://api.minimax.io/v1/chat/completions";
+export const API_ENDPOINTS = {
+  international: "https://api.minimax.io/v1/chat/completions",
+  china: "https://api.minimaxi.com/v1/chat/completions",
+};
+
+export const LATEST_MODELS = [
+  { title: "MiniMax M2.7 (Recommended)", value: "MiniMax-M2.7" },
+  { title: "MiniMax M2.7-highspeed", value: "MiniMax-M2.7-highspeed" },
+  { title: "MiniMax M2.5", value: "MiniMax-M2.5" },
+  { title: "MiniMax M2.5-highspeed", value: "MiniMax-M2.5-highspeed" },
+  { title: "M2-her (Roleplay)", value: "M2-her" },
+  { title: "MiniMax M2.1", value: "MiniMax-M2.1" },
+  { title: "MiniMax M2", value: "MiniMax-M2" },
+];
+
 const REQUEST_TIMEOUT_MS = 60000; // 60 seconds timeout
 
 interface MiniMaxChatResponse {
@@ -22,13 +36,45 @@ export class MiniMaxProvider implements AIProvider {
   private defaultTemperature: number;
   private defaultMaxTokens: number;
   private systemPrompt?: string;
+  private apiEndpoint: string;
 
-  constructor(config: ProviderConfig) {
+  constructor(config: ProviderConfig & { apiEndpoint?: string }) {
     this.apiKey = config.apiKey;
     this.model = config.model || "MiniMax-M2.5";
     this.defaultTemperature = config.temperature ?? 0.7;
     this.defaultMaxTokens = config.maxTokens ?? 4096;
     this.systemPrompt = config.systemPrompt;
+    this.apiEndpoint = config.apiEndpoint || API_ENDPOINTS.china;
+  }
+
+  static async validateApiKey(apiKey: string, apiEndpoint: string): Promise<{ valid: boolean; error?: string }> {
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "MiniMax-M2.5",
+          messages: [{ role: "user", content: "Hi" }],
+          max_tokens: 10,
+        }),
+      });
+
+      if (response.ok) {
+        return { valid: true };
+      }
+
+      if (response.status === 401) {
+        return { valid: false, error: "Invalid API key" };
+      }
+
+      const data = await response.json();
+      return { valid: false, error: data.error?.message || data.message || `API Error: ${response.status}` };
+    } catch (error) {
+      return { valid: false, error: error instanceof Error ? error.message : "Connection failed" };
+    }
   }
 
   private buildMessages(messages: Message[]): Message[] {
@@ -48,7 +94,7 @@ export class MiniMaxProvider implements AIProvider {
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
-      const response = await fetch(MINIMAX_API_URL, {
+      const response = await fetch(this.apiEndpoint, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -92,7 +138,7 @@ export class MiniMaxProvider implements AIProvider {
 
     let response: Response;
     try {
-      response = await fetch(MINIMAX_API_URL, {
+      response = await fetch(this.apiEndpoint, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
