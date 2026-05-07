@@ -12,29 +12,28 @@ interface UseChatReturn {
   isApiKeyValid: boolean | null;
 }
 
-let apiKeyValidated = false;
-
 export function useChat(): UseChatReturn {
   const [streamingContent, setStreamingContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isApiKeyValid, setIsApiKeyValid] = useState<boolean | null>(null);
   const abortRef = useRef(false);
+  const validatedKeyRef = useRef<string>("");
 
-  // Validate API key on first use
+  // Validate API key on mount and re-validate when key changes
   useEffect(() => {
-    if (apiKeyValidated) return;
-    apiKeyValidated = true;
+    const prefs = getPreferenceValues<Preferences>();
+    if (prefs.minimaxApiKey === validatedKeyRef.current) return;
 
     const validateApiKey = async () => {
-      const prefs = getPreferenceValues<Preferences>();
       const apiEndpoint = prefs.apiEndpoint === "international"
         ? API_ENDPOINTS.international
         : API_ENDPOINTS.china;
 
       const result = await MiniMaxProvider.validateApiKey(prefs.minimaxApiKey, apiEndpoint);
       setIsApiKeyValid(result.valid);
+      validatedKeyRef.current = prefs.minimaxApiKey;
 
-      if (!result.valid) {
+      if (result.valid === false) {
         await showToast({
           style: Toast.Style.Failure,
           title: "Invalid API Key",
@@ -48,7 +47,7 @@ export function useChat(): UseChatReturn {
     };
 
     validateApiKey();
-  }, []);
+  });
 
   const getProvider = useCallback(() => {
     const prefs = getPreferenceValues<Preferences>();

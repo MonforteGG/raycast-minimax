@@ -52,7 +52,7 @@
       "required": false,
       "title": "API Endpoint",
       "description": "Select the API endpoint based on your account region",
-      "default": "china",
+      "default": "international",
       "data": [
         {
           "title": "China (api.minimaxi.com)",

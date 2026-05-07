@@ -5,16 +5,6 @@ export const API_ENDPOINTS = {
   china: "https://api.minimaxi.com/v1/chat/completions",
 };
 
-export const LATEST_MODELS = [
-  { title: "MiniMax M2.7 (Recommended)", value: "MiniMax-M2.7" },
-  { title: "MiniMax M2.7-highspeed", value: "MiniMax-M2.7-highspeed" },
-  { title: "MiniMax M2.5", value: "MiniMax-M2.5" },
-  { title: "MiniMax M2.5-highspeed", value: "MiniMax-M2.5-highspeed" },
-  { title: "M2-her (Roleplay)", value: "M2-her" },
-  { title: "MiniMax M2.1", value: "MiniMax-M2.1" },
-  { title: "MiniMax M2", value: "MiniMax-M2" },
-];
-
 const REQUEST_TIMEOUT_MS = 60000; // 60 seconds timeout
 
 interface MiniMaxChatResponse {
@@ -44,10 +34,10 @@ export class MiniMaxProvider implements AIProvider {
     this.defaultTemperature = config.temperature ?? 0.7;
     this.defaultMaxTokens = config.maxTokens ?? 4096;
     this.systemPrompt = config.systemPrompt;
-    this.apiEndpoint = config.apiEndpoint || API_ENDPOINTS.china;
+    this.apiEndpoint = config.apiEndpoint || API_ENDPOINTS.international;
   }
 
-  static async validateApiKey(apiKey: string, apiEndpoint: string): Promise<{ valid: boolean; error?: string }> {
+  static async validateApiKey(apiKey: string, apiEndpoint: string): Promise<{ valid: boolean | null; error?: string }> {
     try {
       const response = await fetch(apiEndpoint, {
         method: "POST",
@@ -70,10 +60,11 @@ export class MiniMaxProvider implements AIProvider {
         return { valid: false, error: "Invalid API key" };
       }
 
-      const data = await response.json();
+      const data = await response.json() as MiniMaxErrorResponse;
       return { valid: false, error: data.error?.message || data.message || `API Error: ${response.status}` };
-    } catch (error) {
-      return { valid: false, error: error instanceof Error ? error.message : "Connection failed" };
+    } catch {
+      // Network errors leave validation state as unknown so requests can still proceed
+      return { valid: null };
     }
   }
 
