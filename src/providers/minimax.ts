@@ -30,7 +30,7 @@ export class MiniMaxProvider implements AIProvider {
 
   constructor(config: ProviderConfig & { apiEndpoint?: string }) {
     this.apiKey = config.apiKey;
-    this.model = config.model || "MiniMax-M2.7";
+    this.model = config.model || "MiniMax-M3";
     this.defaultTemperature = config.temperature ?? 0.7;
     this.defaultMaxTokens = config.maxTokens ?? 4096;
     this.systemPrompt = config.systemPrompt;
@@ -46,7 +46,7 @@ export class MiniMaxProvider implements AIProvider {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "MiniMax-M2.5",
+          model: "MiniMax-M3",
           messages: [{ role: "user", content: "Hi" }],
           max_tokens: 10,
         }),

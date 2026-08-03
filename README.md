@@ -1,6 +1,6 @@
 # MiniMax - Raycast Extension
 
-A "Bring Your Own Key" Raycast extension for AI chat. Supports **MiniMax M2.7**, **M2.5**, **M2.1**, and **M2** models with streaming responses, for both **China** and **International** regions.
+A "Bring Your Own Key" Raycast extension for AI chat. Supports **MiniMax M3**, **M2.7**, **M2.5**, **M2.1**, and **M2** models with streaming responses, for both **China** and **International** regions.
 
 ## Features
 
@@ -34,7 +34,7 @@ Open Raycast → Search for "AI Chat" → `Cmd + ,` to open preferences:
 | -------------------- | -------- | ---------------------------------------------------------------------------- |
 | **MiniMax API Key**  | password | Your MiniMax API key (required)                                              |
 | **API Endpoint**     | dropdown | China (`api.minimaxi.com`) or International (`api.minimax.io`) (default: International) |
-| **Model**            | dropdown | MiniMax-M2.7 (recommended), M2.7-highspeed, M2.5, M2.5-highspeed, M2-her, M2.1, M2 |
+| **Model**            | dropdown | MiniMax-M3 (recommended), M2.7, M2.7-highspeed, M2.5, M2.5-highspeed, M2-her, M2.1, M2 |
 | **System Prompt**    | text     | Custom system prompt (optional)                                              |
 | **Temperature**      | dropdown | 0.3 / 0.7 / 1.0 / 1.5                                                       |
 | **Max Tokens**       | dropdown | 1024 / 2048 / 4096 / 8192                                                    |
@@ -113,9 +113,10 @@ raycast-minimax/
 
 **Models:**
 
-- `MiniMax-M2.7`: Latest generation, recommended
+- `MiniMax-M3`: Latest generation, recommended
+- `MiniMax-M2.7`: Previous generation
 - `MiniMax-M2.7-highspeed`: Fast variant of M2.7
-- `MiniMax-M2.5`: Previous generation
+- `MiniMax-M2.5`: Earlier generation
 - `MiniMax-M2.5-highspeed`: Fast variant of M2.5
 - `M2-her`: Roleplay-optimized model
 - `MiniMax-M2.1`: Earlier generation
