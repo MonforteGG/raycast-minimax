@@ -1,6 +1,10 @@
 # Changelog
 
-## [1.2.0] - {PR_MERGE_DATE}
+## [1.3.0] - 2026-08-03
+
+- Add MiniMax M3 model (now default and recommended)
+
+## [1.2.0] - 2026-05-07
 
 Thanks to [@tolshao](https://github.com/tolshao) for contributing this release.
 
